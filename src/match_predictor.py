@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score
 from sklearn.model_selection import train_test_split
@@ -117,8 +118,21 @@ def main():
 
     #get the highest probability games
     high_conf = combined[combined["probability"] > 0.7]
-    print(high_conf[["actual", "predicted", "probability","date","team","opponent","result"]].head())
+    print(high_conf[["date","actual", "predicted", "probability","date","team","opponent","result"]].head())
     high_conf_sorted = high_conf.sort_values(by="probability", ascending=False)
     high_conf_sorted.to_csv("high_confidence_predictions.csv", index=False)
+
+    top10 = high_conf_sorted.head(10)
+
+    plt.figure(figsize=(10,6))
+    plt.barh(
+        top10["date"].dt.strftime('%Y-%m-%d') + " - W: " + top10["team"] + " vs " + "L: " + top10["opponent"],
+        top10["probability"],
+        color='teal'
+    )
+    plt.xlabel("Predicted Win Probability")
+    plt.title("Top 10 High-Confidence Predictions")
+    plt.tight_layout()
+    plt.show()
 
 main()

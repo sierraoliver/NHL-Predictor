@@ -48,19 +48,33 @@ def main():
     #10250 rows + 1 for titles
     matches = pd.read_csv("matches.csv", index_col=0)
 
-    #calculate win percentage per team
+    #calculate stats per team
     teams = matches.groupby('team')
     win_percent = []
     for team_name, team_games in teams:
         wins = team_games[team_games['result'] == 'W']
+        losses = team_games[team_games['result']=='L']
+
         win_avg = f"{len(wins) / len(team_games) if len(team_games) > 0 else 0:.3f}"
-        team_win = [team_name, win_avg]
+
+        ratio = f"{len(wins)}:{len(losses)}"
+
+        shots = team_games['sog_for'].sum()
+        shots_avg = f"{shots/len(team_games)if len(team_games) > 0 else 0:.3f}"
+
+        goals = team_games['gf'].sum()
+        shooting_acc = f"{goals/shots if shots >0 else 0:0.3f}"
+
+        pim = team_games['pim_for'].sum()
+        avg_pim = f"{pim/len(team_games) if len(team_games) > 0 else 0:.3f}"
+
+        team_win = [team_name, win_avg, ratio, shots_avg, shooting_acc, avg_pim]
         win_percent.append(team_win)
 
-    #create and print win % per team dataframe sorted by probability
-    column_names = ['team', 'win %']
+    #create and print stats per team dataframe sorted by probability
+    column_names = ['team', 'win rate', 'win/loss ratio', 'avg shots', 'shooting accuracy', 'avg penalty min']
     win_prob = pd.DataFrame(win_percent, columns=column_names)
-    win_prob = win_prob.sort_values(by="win %", ascending=False)
+    win_prob = win_prob.sort_values(by="win rate", ascending=False)
     print(win_prob.to_string(index=False))
 
     #covert columns to useable data types

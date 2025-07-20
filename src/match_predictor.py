@@ -48,6 +48,21 @@ def main():
     #10250 rows + 1 for titles
     matches = pd.read_csv("matches.csv", index_col=0)
 
+    #calculate win percentage per team
+    teams = matches.groupby('team')
+    win_percent = []
+    for team_name, team_games in teams:
+        wins = team_games[team_games['result'] == 'W']
+        win_avg = f"{len(wins) / len(team_games) if len(team_games) > 0 else 0:.3f}"
+        team_win = [team_name, win_avg]
+        win_percent.append(team_win)
+
+    #create and print win % per team dataframe sorted by probability
+    column_names = ['team', 'win %']
+    win_prob = pd.DataFrame(win_percent, columns=column_names)
+    win_prob = win_prob.sort_values(by="win %", ascending=False)
+    print(win_prob.to_string(index=False))
+
     #covert columns to useable data types
     matches["date"] = pd.to_datetime(matches["date"])
 

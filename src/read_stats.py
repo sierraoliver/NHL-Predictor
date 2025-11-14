@@ -7,6 +7,17 @@ from datetime import datetime
 import os
 
 def past_stats():
+    '''
+    -----------------------------------------
+    Get past season stats, from current season to 2021
+    Use: df = past_stats()
+    -----------------------------------------
+    Parameters: 
+        None
+    Returns: 
+        df - (dataframe) has stats and information from past games
+    -----------------------------------------
+    '''
     current_year = datetime.now().year
     if (datetime.now().month < 4):
         current_year -= 1
@@ -131,6 +142,17 @@ def past_stats():
     return match_df
 
 def current_season():
+    '''
+    -----------------------------------------
+    Get current season (future) game stats
+    Use: df = current_season
+    -----------------------------------------
+    Parameters: 
+        None
+    Returns:
+        df - (dataframe) has stats and information from current season games
+    -----------------------------------------
+    '''
     current_season = datetime.now().year+1
     if (datetime.now().month < 4):
         current_season -= 1
@@ -238,6 +260,17 @@ def current_season():
     return match_df
 
 def get_start_date():
+    '''
+    -----------------------------------------
+    Gets current season start date
+    Use: start_date = get_start_date()
+    -----------------------------------------
+    Parameters: 
+        None
+    Returns: 
+        start_date - (string) 
+    -----------------------------------------
+    '''
     current_season = datetime.now().year+1
     if (datetime.now().month < 4):
         current_season -= 1
@@ -259,21 +292,33 @@ def get_start_date():
 
     return season_start_date
 
-#ensures it only reads past_stats if necessary (when the csv is empty of stats)
-if os.path.exists('matches.csv') and os.path.getsize('matches.csv') > 0:
-    df = pd.read_csv('matches.csv')
-    season_start = get_start_date()
-        
-    df['date'] = pd.to_datetime(df['date'])
-    season_start = pd.to_datetime(season_start)
-        
-    past_df = df[df['date'] < season_start].copy()
-else:
-    past_df = past_stats()
+def read_stats():
+    '''
+    -----------------------------------------
+    Only reads necessary stats information, if past stats already in csv, only gets new game stats
+    Use: read_stats()
+    -----------------------------------------
+    Parameters: 
+        None
+    Returns:
+        None
+    -----------------------------------------
+    '''
+    #ensures it only reads past_stats if necessary (when the csv is empty of stats)
+    if os.path.exists('matches.csv') and os.path.getsize('matches.csv') > 0:
+        df = pd.read_csv('matches.csv')
+        season_start = get_start_date()
+            
+        df['date'] = pd.to_datetime(df['date'])
+        season_start = pd.to_datetime(season_start)
+            
+        past_df = df[df['date'] < season_start].copy()
+    else:
+        past_df = past_stats()
 
-current_df = current_season()
+    current_df = current_season()
 
-match_df = pd.concat([past_df, current_df], ignore_index=True)
-match_df["date"] = pd.to_datetime(match_df["date"]).dt.normalize()
-match_df.to_csv("matches.csv", index=False)
-print("All matches read and input into a csv file")
+    match_df = pd.concat([past_df, current_df], ignore_index=True)
+    match_df["date"] = pd.to_datetime(match_df["date"]).dt.normalize()
+    match_df.to_csv("matches.csv", index=False)
+    print("All matches read and input into a csv file")

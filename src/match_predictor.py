@@ -5,6 +5,19 @@ from sklearn.metrics import accuracy_score, precision_score
 from sklearn.model_selection import train_test_split
 
 def rolling_averages(group, cols, new_cols):
+    '''
+    -----------------------------------------
+    Calculated rolling averages for prediction columns
+    Use: group = rolling_averages (group, cols, new_cols)
+    -----------------------------------------
+    Parameters: 
+        group - (dataframe) games for a single team
+        cols - (array) regular prediction columns
+        new_cols - (array) rolling averages columns 
+    Returns: 
+        group - (dataframe) team's games with added rolling average statistics
+    -----------------------------------------
+    '''
     group = group.sort_values("date")
     rolling_stats = group[cols].rolling(5,closed='left').mean()
     group[new_cols] = rolling_stats
@@ -13,6 +26,20 @@ def rolling_averages(group, cols, new_cols):
     return group
 
 def make_predictions_prob (model, data, predictors, threshold):
+    '''
+    -----------------------------------------
+    Makes game predictions based on given predictors
+    Use: combined = make_predictions_prob (model, data, predictors, threshold)
+    -----------------------------------------
+    Parameters: 
+        model - machine learning model being used (here XGBoost)
+        data - (dataframe) matchup to run predictions on
+        predictors - (array) list of columns we want to use in predictions
+        threshold - (float) classification threshold (typically 0.5 for balanced classes)
+    Returns: 
+        combined - (dataframe) calculated predictions for each matchup
+    -----------------------------------------
+    '''
     today = pd.Timestamp.today().normalize()
     train = data[data["date"]<today]
     future_games = data[data["date"]>= today].copy()
@@ -37,6 +64,17 @@ def make_predictions_prob (model, data, predictors, threshold):
     return combined
 
 def build_matchups(matches):
+    '''
+    -----------------------------------------
+    Merges matchups so there is only one game per predicted per matchup
+    Use: merged = build_matchups(matches)
+    -----------------------------------------
+    Parameters: 
+        matches - (dataframe) contains all match data
+    Returns: 
+        merged - (dataframe) updated match data
+    -----------------------------------------
+    '''
     home_games = matches[matches["venue"] == "Home"].copy()
     away_games = matches[matches["venue"] == "Away"].copy()
 
@@ -59,7 +97,8 @@ def build_matchups(matches):
     # Sanity check: home_opponent should equal away_team
     #assert all(merged["home_opponent"] == merged["away_team"])
     merged["venue"] = merged["home_team"]
-    merged = merged.drop(columns=["venue_home", "venue_away"])
+    merged["season"] = merged["season_home"]
+    merged = merged.drop(columns=["venue_home", "venue_away", "season_home", "season_away"])
 
     # Target: did the home team win?
     merged["target"] = (merged["result_home"] == "W").astype(int)
@@ -81,6 +120,17 @@ def build_matchups(matches):
     return merged
 
 def calculate_team_stats(games):
+    '''
+    -----------------------------------------
+    Calculates team stats like total wins and losses, win average, shots, etc.
+    Use: calculate_team_stats(games)
+    -----------------------------------------
+    Parameters: 
+        games - (dataframe) has past game information (to ensure all stats aren't null)
+    Returns: 
+        df - (dataframe) has stats and information from current season games
+    -----------------------------------------
+    '''
     #calculate stats per team
     teams = games.groupby('team')
     win_percent = []
@@ -105,6 +155,19 @@ def calculate_team_stats(games):
     print(win_prob.to_string(index=False))
 
 def run_predictions():
+    '''
+    -----------------------------------------
+    Generate predictions for upcoming games
+    Use: eval_df, prob_pf = run_predictions()
+    -----------------------------------------
+    Parameters: 
+        None
+    Returns: 
+        eval_df - (dataframe) contains past predictions to show accuracy of model
+        prob_pf - (dataframe) contains predictions for upcoming games
+        high_conf - (dataframe) contains the higher probability predictions, sorted by probability
+    -----------------------------------------
+    '''
     matches = pd.read_csv("matches.csv", index_col=0)
     matches["date"] = pd.to_datetime(matches["date"]).dt.normalize()
 
@@ -146,13 +209,14 @@ def run_predictions():
     prob_pred_df.to_csv("predictions.csv", index=False)
 
     #get the highest probability games
-    high_conf = prob_pred_df[prob_pred_df["home_win_probability"] > 0.6].sort_values(by="home_win_probability", ascending=False)
+    high_conf = prob_pred_df[prob_pred_df["home_win_probability"] > 0.7].sort_values(by="home_win_probability", ascending=False)
     if (not high_conf.empty):
         high_conf.to_csv("high_confidence_predictions.csv", index=False)
-        print(high_conf[["date", "prediction", "home_win_probability", "away_win_probability","predicted_winner"]].head())
+        #print(high_conf[["date", "prediction", "home_win_probability", "away_win_probability","predicted_winner"]].head())
 
         top10 = high_conf.head(10)
-        print(top10)
+        print("----- Top 10 Highest Predictions -----")
+        print(top10[["date","home_team", "away_team" ,"prediction", "home_win_probability", "away_win_probability","predicted_winner"]])
 
     past_matchups = matchups[matchups["date"] < today].copy()
     X = past_matchups[predictors]
@@ -175,6 +239,4 @@ def run_predictions():
     print("----- Evaluation Predictions -----")
     print(eval_df[["date", "home_team", "away_team", "predicted", "probability", "target", "correct_label"]])
 
-    return eval_df, prob_pred_df
-
-run_predictions()
+    return eval_df, prob_pred_df, high_conf

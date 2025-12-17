@@ -28,7 +28,8 @@ This project is a machine learning-based NHL game outcome predictor that uses hi
 <h2>Installation</h2>
 
 1) Clone the repository:
-    - git clone https://github.com/yourusername/NHL-Predictor.git
+    - git clone https://github.com/sierraoliver/NHL-Predictor.git
+    - cd NHL-Predictor
 
 2) Install required Python packages:
     - pip install pandas xgboost scikit-learn streamlit beautifulsoup4 requests lxml

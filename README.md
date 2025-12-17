@@ -38,13 +38,3 @@ This project is a machine learning-based NHL game outcome predictor that uses hi
     - streamlit run app.py
 
 -------------------------------------------------------------------------------------
-<h2>Project Structure</h2>
-
-├── read_stats.py          # Web scraping and data updates
-├── match_predictor.py     # Feature engineering and prediction logic
-├── app.py                 # Streamlit application
-├── matches.csv            # Stored historical game data
-├── predictions.csv        # Generated predictions
-├── README.md
-
--------------------------------------------------------------------------------------

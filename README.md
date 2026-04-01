@@ -4,7 +4,7 @@
 This project is a machine learning-based NHL game outcome predictor that uses historical game data (2021–2025) to forecast match results. The model incorporates team stats, venue, opponent, shot differentials, penalties, and rolling averages to improve prediction accuracy.
 
 ------------------------------------------------------------------------------------
-<h2>Features</h2>
+## Features
 
 - Data Collection: Web scraper extracts detailed NHL game data including scores, shots, penalties, and results.
 
@@ -25,17 +25,14 @@ This project is a machine learning-based NHL game outcome predictor that uses hi
     - Highlight high-confidence matchups in tabular form
  
 ------------------------------------------------------------------------------------
-<h2>Architecture</h2>
+## Architecture
 - Data ingestion: Web scraping using BeautifulSoup
-
 - Processing: Pandas feature engineering and rolling averages
-
 - Model: XGBoost classifier
-  
 - Interface: Streamlit app for retraining and visualization
 
 ------------------------------------------------------------------------------------
-<h2>Installation</h2>
+## Installation
 
 1) Clone the repository:
     - git clone https://github.com/sierraoliver/NHL-Predictor.git
@@ -48,7 +45,7 @@ This project is a machine learning-based NHL game outcome predictor that uses hi
     - streamlit run app.py
 
 -------------------------------------------------------------------------------------
-<h2>Motivation</h2>
+## Motivation
 I built this project to explore how machine learning can be used to make probabilistic predictions on real-world sports data, and to practice building an end-to-end data pipeline from scraping to deployment.
 
 -------------------------------------------------------------------------------------

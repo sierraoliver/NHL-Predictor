@@ -27,8 +27,11 @@ This project is a machine learning-based NHL game outcome predictor that uses hi
 ------------------------------------------------------------------------------------
 <h2>Architecture</h2>
 - Data ingestion: Web scraping using BeautifulSoup
-- Processing: Pandas feature engineering and rolling averages 
-- Model: XGBoost classifier  
+
+- Processing: Pandas feature engineering and rolling averages
+
+- Model: XGBoost classifier
+  
 - Interface: Streamlit app for retraining and visualization
 
 ------------------------------------------------------------------------------------

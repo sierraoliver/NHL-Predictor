@@ -23,6 +23,13 @@ This project is a machine learning-based NHL game outcome predictor that uses hi
     - Retrain the prediction model
     - View upcoming game predictions with win probabilities
     - Highlight high-confidence matchups in tabular form
+ 
+------------------------------------------------------------------------------------
+<h2>Architecture</h2>
+- Data ingestion: Web scraping using BeautifulSoup
+- Processing: Pandas feature engineering and rolling averages
+- Model: XGBoost classifier
+- Interface: Streamlit app for retraining and visualization
 
 ------------------------------------------------------------------------------------
 <h2>Installation</h2>
@@ -36,5 +43,9 @@ This project is a machine learning-based NHL game outcome predictor that uses hi
   
 3) Run the application:
     - streamlit run app.py
+
+-------------------------------------------------------------------------------------
+<h2>Motivation</h2>
+I built this project to explore how machine learning can be used to make probabilistic predictions on real-world sports data, and to practice building an end-to-end data pipeline from scraping to deployment.
 
 -------------------------------------------------------------------------------------
